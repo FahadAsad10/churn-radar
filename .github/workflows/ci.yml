@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - name: Lint
+        run: ruff check . && ruff format --check .
+      - name: Tests (data, model quality, dashboard)
+        run: pytest -q
+      - name: Train and print metrics
+        run: python -m churn_radar.train
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t churn-radar .
+      - name: Smoke test
+        run: |
+          docker run -d -p 8501:8501 --name app churn-radar
+          for i in $(seq 30); do curl -sf localhost:8501/_stcore/health && exit 0; sleep 2; done
+          docker logs app
+          exit 1
