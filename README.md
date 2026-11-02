@@ -2,6 +2,8 @@
 
 **An end-to-end machine learning project that predicts which subscription customers are about to cancel, explains why, and suggests what would keep them.** Built with scikit-learn and an interactive Streamlit dashboard, packaged with Docker and tested in CI.
 
+**▶ [Try the live demo](https://fahadasad10.github.io/churn-radar/)**: runs entirely in your browser, nothing to install (first load takes about 30 seconds).
+
 ![Churn Radar overview dashboard](docs/overview.png)
 
 ## What it does
